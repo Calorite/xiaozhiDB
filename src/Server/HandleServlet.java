@@ -26,7 +26,7 @@ import DAO.Parama;
 @MultipartConfig(maxFileSize = 1048576) // Н≈Се1M
 @WebServlet("/chart")
 public class HandleServlet extends HttpServlet {
-	private List<Parama> parameterlist=new LinkedList<Parama>();
+
 	private static final long serialVersionUID = 1L;
 	private static String path="C:\\Users\\works.DESKTOP-H20QRUB\\Bootcamp\\JavaSpace\\.metadata\\.plugins\\org.eclipse.wst.server.core\\tmp0\\work\\Catalina\\localhost\\xiaozhiDB\\";
 	private String getFileName(Part part) {
@@ -79,12 +79,12 @@ public class HandleServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		try {
-			parameterlist=DBupdate.getparams();
-		} catch (SQLException e) {
+		//try {
+			//parameterlist=DBupdate.getparams();
+		//} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		//	e.printStackTrace();
+		//}
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 		response.sendRedirect("Imgupload.jsp");
 

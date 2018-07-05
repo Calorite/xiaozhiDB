@@ -1,12 +1,13 @@
 package DAO;
 
 public class Parama {
-
+	private int id;
 	private int questionId;
 	private String parama;
 	private int rank;
 
-	public Parama(int quesid,String param,int rank) {
+	public Parama(int id, int quesid,String param,int rank) {
+		this.id=id;
 		this.questionId=quesid;
 		this.parama=param;
 		this.rank=rank;
@@ -18,6 +19,20 @@ public class Parama {
 	public int getQuestionId() {
 		return questionId;
 	}
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	/**
 	 * @param questionId the questionId to set
 	 */
