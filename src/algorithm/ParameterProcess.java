@@ -17,6 +17,7 @@ import DAO.DBupdate;
 import DAO.Parama;
 
 public class ParameterProcess {
+	private static Set<Integer> stopwords=new HashSet<Integer>(187);
 	public boolean checkandpara(String para,String text) {
 		if(para.contains("&")) {
 			String[] pararray=para.split("&");
@@ -65,7 +66,22 @@ public class ParameterProcess {
 		return false;
 	}
 
-
+	public static Set<Integer> getValidparameters(Map<Set<Integer>, Integer> parameterlist,Set<Integer> getedpara){
+		Map<Set<Integer>,Integer> retainmap=new HashMap<Set<Integer>,Integer>();
+		//Map<Set<Integer>,Set<Integer>> originalset=new HashMap<Set<Integer>,Set<Integer>>();
+		for(Set<Integer> set:parameterlist.keySet()) {
+			Set<Integer> retainset=new HashSet<Integer>();
+			retainset.addAll(set);
+			retainset.retainAll(getedpara);
+			if(retainset.size()>0) {
+				retainmap.put(retainset, retainset.size());
+			}
+		}
+		Map<Set<Integer>,Integer> newretainmap=sortByValue(retainmap);
+		Map.Entry<Set<Integer>,Integer> entry = newretainmap.entrySet().iterator().next();
+		Set<Integer> newset=entry.getKey();
+		return newset;
+	}
 
 	public Set<Parama> getParemetes(String text) throws SQLException{
 		List<Parama> parameterlist=DBupdate.getparams();
@@ -98,17 +114,50 @@ public class ParameterProcess {
 		}
 	}
 
-	public List<String> returnquesid(Set<Parama> parametes) throws SQLException {
+	public List<String> returnidbyVildparameters(Map<Set<Integer>, Integer> parameterlist,Set<Integer> newset){
+		List<String> returnlist=new LinkedList<String>();
+		Set<Integer> leave=new HashSet<Integer>();
+		if(newset.size()>0) {
+			for(Set<Integer> set:parameterlist.keySet()) {
+				if(compareSet(set,newset)) {//全包含返回solutionid
+					returnlist.add("solution");
+					returnlist.add(String.valueOf(parameterlist.get(set)));
+					return returnlist;
+				}else {
+					if(set.containsAll(newset)) {
+						Set<Integer> inset=containsSet(set,newset);//包含返回set
+						if(inset!=null) {
+							leave.addAll(inset);
+						}
+					}
+				}
+			}
+			if(leave.size()>0) {
+				int returnid=DBupdate.getQuestionid(0, leave);
+				if(returnid!=1000) {
+					returnlist.add("question");
+					returnlist.add(String.valueOf(returnid));
+					return returnlist;
+				}else {
+					return null;
+				}
+			}
+		}
+		return null;
+	}
+
+
+
+	public List<String> returnquesid(Map<Set<Integer>, Integer> parameterlist,Set<Parama> parametes) throws SQLException {//返回questionid或者solutionid
 		List<String> returnlist=new LinkedList<String>();
 		Set<Integer> leave=new HashSet<Integer>();
 		Set<Integer> getedpara=new HashSet<Integer>();
 		for(Parama curpara:parametes) {
 			getedpara.add(curpara.getId());
 		}
-		Map<Set<Integer>, Integer> parameterlist=DBupdate.getsolutionlist();
 		for(Set<Integer> set:parameterlist.keySet()) {
 			if(compareSet(set,getedpara)) {//全包含返回solutionid
-				returnlist.add("solutin");
+				returnlist.add("solution");
 				returnlist.add(String.valueOf(parameterlist.get(set)));
 				return returnlist;
 			}else {
@@ -121,7 +170,6 @@ public class ParameterProcess {
 		if(leave.size()>0) {
 			int returnid=DBupdate.getQuestionid(0, leave);
 			if(returnid!=1000) {
-				returnlist=null;
 				returnlist.add("question");
 				returnlist.add(String.valueOf(returnid));
 				return returnlist;
@@ -129,51 +177,8 @@ public class ParameterProcess {
 				return null;
 			}
 		}else {//没有包含集合查找最相似集合
-			Map<Set<Integer>,Integer> retainmap=new HashMap<Set<Integer>,Integer>();
-			//Map<Set<Integer>,Set<Integer>> originalset=new HashMap<Set<Integer>,Set<Integer>>();
-			for(Set<Integer> set:parameterlist.keySet()) {
-				Set<Integer> retainset=new HashSet<Integer>();
-				retainset.addAll(set);
-				retainset.retainAll(getedpara);
-				if(retainset.size()>0) {
-					retainmap.put(retainset, retainset.size());
-				}
-			}
-			Map<Set<Integer>,Integer> newretainmap=sortByValue(retainmap);
-			Map.Entry<Set<Integer>,Integer> entry = newretainmap.entrySet().iterator().next();
-			Set<Integer> newset=entry.getKey();
-			if(newset.size()>0) {
-				for(Set<Integer> set:parameterlist.keySet()) {
-					if(compareSet(set,newset)) {//全包含返回solutionid
-						returnlist=null;
-						returnlist.add("question");
-						returnlist.add(String.valueOf(parameterlist.get(set)));
-						return returnlist;
-					}else {
-						if(set.containsAll(newset)) {
-							Set<Integer> inset=containsSet(set,newset);//包含返回set
-							if(inset!=null) {
-								leave.addAll(inset);
-							}
-						}
-					}
-				}
-				if(leave.size()>0) {
-					int returnid=DBupdate.getQuestionid(0, leave);
-					if(returnid!=1000) {
-						returnlist=null;
-						returnlist.add("question");
-						returnlist.add(String.valueOf(returnid));
-						return returnlist;
-					}else {
-						return null;
-					}
-				}
-			}else {//API
-				return null;
-			}
+			return null;
 		}
-		return null;
 	}
 
 	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
@@ -196,16 +201,45 @@ public class ParameterProcess {
 
 
 
-	public static void main(String[] args) throws SQLException {
-		ParameterProcess pp=new ParameterProcess();
-		Set<Parama> parametes=pp.getParemetes("我家狗狗不吃狗粮");
-		if(parametes.size()>0) {
-			List<String> returnnum=pp.returnquesid(parametes);
-			if(returnnum.get(0)=="solutin") {
-
-			}
-		}else {
-			//
-		}
-	}
+//	public static void main(String[] args) throws SQLException {
+//		ParameterProcess pp=new ParameterProcess();
+//		Set<Parama> parametes=pp.getParemetes("狗狗能吃瓜子吗");
+//		Set<Integer> getedpara=new HashSet<Integer>();
+//		Map<Set<Integer>, Integer> parameterlist=DBupdate.getsolutionlist();
+//		for(Parama curpara:parametes) {
+//			getedpara.add(curpara.getId());
+//		}
+//		if(getedpara.size()==1&&stopwords.containsAll(getedpara)) {
+//			//API
+//		}else {
+//			if(parametes.size()>0) {
+//				List<String> returnnum=pp.returnquesid(parameterlist,parametes);
+//				if(returnnum==null) {
+//					Set<Integer> vildparameters=getValidparameters(parameterlist,getedpara);
+//					if(vildparameters.size()==1&&stopwords.containsAll(vildparameters)) {
+//						//API
+//					}else {
+//						List<String> returnlist=pp.returnidbyVildparameters(parameterlist,vildparameters);
+//						if(returnlist.size()>0) {
+//							if(returnlist.get(0)=="solutin") {
+//								System.out.println(DBupdate.getSolutinStr(returnlist.get(1)));
+//							}else if(returnlist.get(0)=="question") {
+//								System.out.println(DBupdate.getQustionStr(returnlist.get(1)));
+//							}
+//						}else {
+//							//API
+//						}
+//					}
+//				}else {
+//					if(returnnum.get(0)=="solutin") {
+//						System.out.println(DBupdate.getSolutinStr(returnnum.get(1)));
+//					}else if(returnnum.get(0)=="question") {
+//						System.out.println(DBupdate.getQustionStr(returnnum.get(1)));
+//					}
+//				}
+//			}else {
+//				//API
+//			}
+//		}
+//	}
 }

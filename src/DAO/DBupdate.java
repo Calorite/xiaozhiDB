@@ -88,7 +88,20 @@ public class DBupdate {
 		return 0;
 	}
 
+	public static String getQustionStr(String id) {
+		DBService helper=new DBService();
+		String sql="SELECT question FROM ai_qanda.paramenterques_tb where id=?";
+		String[] params= {id};
+		Object returnlist=helper.executeQuerySingle(sql, params);
+		return returnlist.toString();
+	}
 
-
+	public static String getSolutinStr(String id) {
+		DBService helper=new DBService();
+		String sql="SELECT question FROM ai_qanda.solution_tb where id=?";
+		String[] params= {id};
+		Object returnlist=helper.executeQuerySingle(sql, params);
+		return returnlist.toString();
+	}
 
 }
