@@ -17,9 +17,7 @@
 		<div style="margin-top: 20vh; folat: left; heigh: 500px; width: 300px">
 			<form class="form-group" action="chart" enctype="multipart/form-data"
 				method="POST">
-				<div class="uploadButton">上传头像<input type="file" name="file"
-						onchange="uv.style.display='inline-block'; uv.value = this.value;" />
-				</div>
+				<div class="uploadButton">上传头像<input type="file" name="file" /></div>
 				<div class="img-display">
 					<div class="preview"></div>
 				</div>
@@ -27,6 +25,7 @@
 					value="Upload">
 			</form>
 		</div>
+		<img alt="img" style="width:100px;heigh:100px;" src="data:image/jpeg;base64,${imagesBytes}"/>
 	</div>
 </body>
 </html>

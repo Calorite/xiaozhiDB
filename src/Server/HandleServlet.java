@@ -106,7 +106,7 @@ public class HandleServlet extends HttpServlet {
 			String imgbyte=Picture2ByteStr(path+name);
 			HttpSession session = request.getSession();
 			session.setAttribute("imagesBytes", imgbyte);
-			response.sendRedirect("Showuploaded.jsp");
+			response.sendRedirect("Imgupload.jsp");
 		} else {
 			response.getWriter().println("Invalid file is uploaded.");
 		}
