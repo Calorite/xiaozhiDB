@@ -1,8 +1,0 @@
-@charset "UTF-8";
-
-.input-file .preview {
-  background-image: url(/hoge.jpg);
-}
-.input-file input[type="file"] {
-  opacity: 0;
-}

@@ -1,4 +1,4 @@
-package DAO;
+package Impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,20 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class DBupdate {
-	public static boolean updateImg(int id,String Path) {
-		DBService helper=new DBService();
-		String sql="update user set ImgPath=? where Id=?";
-		String[] params= {Path,String.valueOf(id)};
-		int retunlines=helper.executeUpdate(sql, params);
-		if(retunlines==1) {
-			return true;
-		}
-		return false;
-	}
+import algorithm.ParameterProcess;
 
-	public static List<Parama> getparams() throws SQLException{
-		List<Parama> list1=new LinkedList<Parama>();
+public class DBupdate {
+
+	public static Map<Integer,Parama> getparams() throws SQLException{
+		Map<Integer,Parama> allparamenters=new HashMap<Integer,Parama>();
 		ResultSet rs;
 		DBService helper=new DBService();
 		String sql="SELECT * FROM ai_qanda.parameter_tb where id>?;";
@@ -30,9 +22,9 @@ public class DBupdate {
 		rs=helper.executeQueryRS(sql, params);
 		while(rs.next()) {
 			Parama p=new Parama(rs.getInt(1),rs.getInt(2),rs.getString(4),rs.getInt(6));
-			list1.add(p);
+			allparamenters.put(rs.getInt(1), p);
 		}
-		return list1;
+		return allparamenters;
 	}
 
 
@@ -56,34 +48,25 @@ public class DBupdate {
 		return list1;
 	}
 
-	public static int getQuestionid(int type,Set<Integer> set1) {
-		String sql="";
-		int maxrank=1000;
+	public static int getQuestionid(int type,Set<Integer> set1,Map<Integer,Parama> allparamenter) throws SQLException {
+		StringBuffer sql=null;
 		DBService helper=new DBService();
-		int maxid=100000;
-		for(int id:set1) {
-			if(type==0) {//Œ¢
-				sql="SELECT rank FROM ai_qanda.parameter_tb where id=?";
-			}else {//”L
-				sql="SELECT rank FROM ai_qanda.parameter_cat_tb where id=?";
-			}
-			String[] params= {String.valueOf(id)};
-			Object returnlist=helper.executeQuerySingle(sql, params);
-			try{
-				int rank=(int)returnlist;
-				if((int)rank<maxrank) {
-					maxrank=rank;
-					maxid=id;
-				}
-			}catch (Exception e){
-				e.printStackTrace();
-			}
+		if(type==0) {//Œ¢
+			sql=new StringBuffer("SELECT id,rank FROM ai_qanda.parameter_tb where ");
+		}else {//”L
+			sql=new StringBuffer("SELECT id,rank FROM ai_qanda.parameter_cat_tb where ");
 		}
-		if(maxid!=100000) {
-			String getqusidsql="SELECT quesid FROM ai_qanda.parameter_tb where id=?";
-			String [] paramater= {String.valueOf(maxid)};
-			Object queidobj=helper.executeQuerySingle(getqusidsql, paramater);
-			return (int)queidobj;
+		Map<Integer,Integer> map=new HashMap<Integer,Integer>();
+		for(int id:set1) {
+			Parama paramenter=allparamenter.get(id);
+			map.put(id,paramenter.getRank());
+		}
+		Map<Integer,Integer> soredmap=ParameterProcess.sortByValue(map);
+		Map.Entry<Integer,Integer> entry = soredmap.entrySet().iterator().next();
+		Integer firstone=entry.getKey();
+		if(firstone!=null) {
+			Parama paramenter=allparamenter.get(firstone);
+			return paramenter.getQuestionId();
 		}
 		return 0;
 	}

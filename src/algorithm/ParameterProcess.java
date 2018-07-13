@@ -2,6 +2,7 @@ package algorithm;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -11,13 +12,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
-import DAO.DBupdate;
-import DAO.Parama;
+import Impl.DBupdate;
+import Impl.Parama;
+
+import java.util.Set;
 
 public class ParameterProcess {
 	private static Set<Integer> stopwords=new HashSet<Integer>(187);
+	private static Map<Integer,Parama> allparamenter=null;
 	public boolean checkandpara(String para,String text) {
 		if(para.contains("&")) {
 			String[] pararray=para.split("&");
@@ -77,16 +80,16 @@ public class ParameterProcess {
 				retainmap.put(retainset, retainset.size());
 			}
 		}
-		Map<Set<Integer>,Integer> newretainmap=sortByValue(retainmap);
+		Map<Set<Integer>,Integer> newretainmap=sortByValueDesc(retainmap);
 		Map.Entry<Set<Integer>,Integer> entry = newretainmap.entrySet().iterator().next();
 		Set<Integer> newset=entry.getKey();
 		return newset;
 	}
 
 	public Set<Parama> getParemetes(String text) throws SQLException{
-		List<Parama> parameterlist=DBupdate.getparams();
+		allparamenter=DBupdate.getparams();
 		Set<Parama> targetpara=new HashSet<Parama>();
-		for(Parama curtparamente:parameterlist) {
+		for(Parama curtparamente:allparamenter.values()) {
 			if(checkParamete(curtparamente.getParama(),text)) {
 				targetpara.add(curtparamente);
 			}
@@ -114,7 +117,7 @@ public class ParameterProcess {
 		}
 	}
 
-	public List<String> returnidbyVildparameters(Map<Set<Integer>, Integer> parameterlist,Set<Integer> newset){
+	public List<String> returnidbyVildparameters(Map<Set<Integer>, Integer> parameterlist,Set<Integer> newset) throws SQLException{
 		List<String> returnlist=new LinkedList<String>();
 		Set<Integer> leave=new HashSet<Integer>();
 		if(newset.size()>0) {
@@ -133,7 +136,7 @@ public class ParameterProcess {
 				}
 			}
 			if(leave.size()>0) {
-				int returnid=DBupdate.getQuestionid(0, leave);
+				int returnid=DBupdate.getQuestionid(0, leave,allparamenter);
 				if(returnid!=1000) {
 					returnlist.add("question");
 					returnlist.add(String.valueOf(returnid));
@@ -168,7 +171,7 @@ public class ParameterProcess {
 			}
 		}
 		if(leave.size()>0) {
-			int returnid=DBupdate.getQuestionid(0, leave);
+			int returnid=DBupdate.getQuestionid(0, leave,allparamenter);
 			if(returnid!=1000) {
 				returnlist.add("question");
 				returnlist.add(String.valueOf(returnid));
@@ -181,7 +184,8 @@ public class ParameterProcess {
 		}
 	}
 
-	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+	//降序
+	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValueDesc(Map<K, V> map) {
 
 		List<Entry<K,V>> sortedEntries = new ArrayList<Entry<K,V>>(map.entrySet());
 		Collections.sort(sortedEntries,
@@ -199,6 +203,24 @@ public class ParameterProcess {
 		return result;
 	}
 
+	//升序
+	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+
+		List<Entry<K,V>> sortedEntries = new ArrayList<Entry<K,V>>(map.entrySet());
+		Collections.sort(sortedEntries,
+				new Comparator<Entry<K,V>>() {
+			@Override
+			public int compare(Entry<K,V> e1, Entry<K,V> e2) {
+				return e1.getValue().compareTo(e2.getValue());
+			}
+		}
+				);
+		Map<K, V> result = new LinkedHashMap<>();
+		for (Entry<K, V> entry : sortedEntries) {
+			result.put(entry.getKey(), entry.getValue());
+		}
+		return result;
+	}
 
 
 //	public static void main(String[] args) throws SQLException {

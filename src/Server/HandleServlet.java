@@ -17,8 +17,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import org.apache.tomcat.util.codec.binary.Base64;
 
-import DAO.DBupdate;
-import DAO.Parama;
+import Impl.DBupdate;
+import Impl.Parama;
 
 /**
  * Servlet implementation class HandleServlet

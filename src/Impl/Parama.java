@@ -1,4 +1,4 @@
-package DAO;
+package Impl;
 
 public class Parama {
 	private int id;

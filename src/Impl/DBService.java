@@ -1,4 +1,4 @@
-package DAO;
+package Impl;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -16,8 +16,8 @@ import java.util.Map;
 public class DBService {
 
     private static final String DRIVER = "com.mysql.jdbc.Driver";
-    private static final String URLSTR = "jdbc:mysql://47.93.0.77/ai_qanda";
-    private static final String USERNAME = "calorite";
+    private static final String URLSTR = "jdbc:mysql://127.0.0.1/ai_qanda";
+    private static final String USERNAME = "root";
     private static final String USERPASSWORD ="474950494";
     private Connection connnection = null;
     private PreparedStatement preparedStatement = null;

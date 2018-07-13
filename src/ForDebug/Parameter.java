@@ -4,6 +4,8 @@ public class Parameter {
 	private String word;
 	private String parameter;
 	private int parameterid;
+	private int questionid;
+	private int rank;
 	/**
 	 * @return the word
 	 */
@@ -39,6 +41,30 @@ public class Parameter {
 	 */
 	public void setParameterid(int parameterid) {
 		this.parameterid = parameterid;
+	}
+	/**
+	 * @return the questionid
+	 */
+	public int getQuestionid() {
+		return questionid;
+	}
+	/**
+	 * @param questionid the questionid to set
+	 */
+	public void setQuestionid(int questionid) {
+		this.questionid = questionid;
+	}
+	/**
+	 * @return the rank
+	 */
+	public int getRank() {
+		return rank;
+	}
+	/**
+	 * @param rank the rank to set
+	 */
+	public void setRank(int rank) {
+		this.rank = rank;
 	}
 
 }
