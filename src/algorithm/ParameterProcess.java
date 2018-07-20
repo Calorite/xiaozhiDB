@@ -49,24 +49,20 @@ public class ParameterProcess {
 	}
 
 
-	public boolean checkParamete(String parameline,String text) {
+	public String checkParamete(String parameline,String text) {
 		if(parameline.contains("/")) {//有多个参
 			String[] paramelist=parameline.split("/");
 			for(String parameter:paramelist) {
 				if(checkandpara(parameter,text)) {
-					return true;
-				}else {
-					return false;
+					return parameter;
 				}
 			}
 		}else {
 			if(checkandpara(parameline,text)) {
-				return true;
-			}else {
-				return false;
+				return parameline;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	public static Set<Integer> getValidparameters(Map<Set<Integer>, Integer> parameterlist,Set<Integer> getedpara){
@@ -90,7 +86,9 @@ public class ParameterProcess {
 		allparamenter=DBupdate.getparams();
 		Set<Parama> targetpara=new HashSet<Parama>();
 		for(Parama curtparamente:allparamenter.values()) {
-			if(checkParamete(curtparamente.getParama(),text)) {
+			String targetparame=checkParamete(curtparamente.getParama(),text);
+			if(targetparame!=null) {
+				curtparamente.setTargetparame(targetparame);
 				targetpara.add(curtparamente);
 			}
 		}

@@ -20,7 +20,7 @@ public class WordsParameter {
 		List<SegToken> list=segmenter.process(text, SegMode.INDEX);
 		for(SegToken token:list) {
 			for(Parama parameter:getedparama) {
-				if(pprocess.checkParamete(parameter.getParama(),token.word)) {
+				if(pprocess.checkParamete(parameter.getParama(),token.word)!=null) {
 					Parameter pa=new Parameter();
 					pa.setWord(token.word);
 					pa.setParameter(parameter.getParama());

@@ -4,7 +4,8 @@ function SelectText()
 	try{
 		var selecter=window.getSelection().toString();
 		if(selecter!=null&&selecter.trim()!=""){
-			$("#tbe").append("<tr id='"+buttoncount+"'><td><button onclick='deletefuc(event);'>删除</button></td> <td><button  type='button' class='btn btn-warning btn-sm buttonshow' onclick='showquestion(event);'>"+selecter+"</button></td></tr>");
+			$("#tbe").append("<tr id='"+buttoncount+"'><td><div class='btn-toolbar'><div class='btn-group'><button class='btn btn-info ' onclick='dealfuc(event);'>编辑</button></div><div class='btn-group'><button  class='btn btn-danger' onclick='deletefuc(event);'>删除</button></div><div class='btn-group'><button  class='btn btn-default' onclick='shownewquestion(event);'>"+selecter+"</button></div></div></td></tr>");
+			$("#tbe").append("<tr></tr>");
 			buttoncount=buttoncount+1;
 		}
 	}catch(err){
@@ -17,38 +18,35 @@ function SelectText()
 }
 
 function deletefuc(event){
-	var p=event.srcElement.parentNode.parentNode.id;
+	var p=event.srcElement.parentNode.parentNode.parentNode.parentNode.id;
 	$("#"+p).remove();
 }
 
 
-$("#tijiao").on("click",function(){
-	var text=$("#textn").val();
-	$.ajax({
-		type : "POST",
-		url : "/xiaozhiDB/getparametes",
-		data:{description:text},
-		success : function (data) {
-			var obj = JSON.parse(data);
-			for(j = 0; j < obj.length; j++){
-				item=obj[j];
-				$("#tbe").append("<tr id='"+buttoncount+"'><td><button onclick='deletefuc(event);'>删除</button></td> <td><button id='"+item.id+"' questionid='"+item.questionId+"' type='button' class='btn btn-primary btn-sm buttonshow' onclick='showquestion(event);'>"+item.parama+"</button></td></tr>");
-				buttoncount=buttoncount+1;
-			}
-		}});
-});
 
 function showquestion(event){
 	 questionid=event.srcElement.getAttribute("questionid");
 	 if(questionid!=null){
 		 $.ajax({
 				type : "POST",
-				url : "/xiaozhiDB/question",
+				url : "/jerseyREST/webapi/myresource/question",
 				data:{quesid:questionid},
 				success : function (data) {
 					console.log(data);
 					}
 				});
 	 }
+}
+
+function shownewquestion(event){
+	newparameter=event.srcElement.innerText;
+	trid=event.srcElement.parentNode.parentNode.parentNode.parentNode.id;
+	$("#"+trid).after('<form class="form-inline">'
+	+'<div class="form-group">'
+    +'<label for="question">问题:</label>'
+    +'<input type="text" class="form-control" id="question" >'
+    +'</div>'
+    +'<button type="submit" class="btn btn-default">确定</button>'
+    +'</form>');
 }
 

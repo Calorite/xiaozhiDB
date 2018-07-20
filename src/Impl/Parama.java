@@ -5,6 +5,7 @@ public class Parama {
 	private int questionId;
 	private String parama;
 	private int rank;
+	private String targetparame;
 
 	public Parama(int id, int quesid,String param,int rank) {
 		this.id=id;
@@ -62,6 +63,20 @@ public class Parama {
 	 */
 	public void setRank(int rank) {
 		this.rank = rank;
+	}
+
+	/**
+	 * @return the targetparame
+	 */
+	public String getTargetparame() {
+		return targetparame;
+	}
+
+	/**
+	 * @param targetparame the targetparame to set
+	 */
+	public void setTargetparame(String targetparame) {
+		this.targetparame = targetparame;
 	}
 
 }

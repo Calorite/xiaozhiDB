@@ -14,29 +14,23 @@
 <link href="css/myshow.css" rel="stylesheet" />
 </head>
 <body>
-	<br>
-	<div>
+	<div style="padding-top:10px">
 		<form id="usrform" >
 			<div class="leftitem form-group">
-				<c:if test="${text!=null}">
-				</c:if>
-				<textarea id="textn" name="description" rows="30" cols="80"
+				<textarea id="textn" name="description" rows="15" cols="30"
 					onClick="SelectText()"></textarea>
 			</div>
-			<button type="button" class="leftitem"  id="tijiao">提交</button>　
+			<div class="leftitem form-group">
+				<button type="button"  id="tijiao">提交</button>
+			</div>	　
 		</form>
-		<form action="ZHI" id="parameters" method="POST">
-			<div class="leftitem" id="parameterlist">
-				<c:forEach items="${parameters}" var="item" varStatus="status">
-					<button type='button' class='btn btn-primary btn-sm buttonshow'
-						onclick='deletefuc(event);'>${item.getParama()}</button>
-					<br>
-				</c:forEach>
-				<table id="tbe">
-					
+		<form id="parameterform">
+			<div class="leftitem form-group" id="parameterlist">
+				<table id="tbe" class="table">
+
 				</table>
 			</div>
-			<div class="endleft">
+			<div class="endleft form-group">
 				SolutionID:<input name="solution" type="text"></input> <input
 					type="submit">
 			</div>
