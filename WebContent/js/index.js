@@ -1,4 +1,6 @@
 var buttoncount=1;
+var testlist=[234,453,565,657];
+var newquestionmap=new Map();
 function SelectText()
 {
 	try{
@@ -20,33 +22,54 @@ function SelectText()
 function deletefuc(event){
 	var p=event.srcElement.parentNode.parentNode.parentNode.parentNode.id;
 	$("#"+p).remove();
+	$("#newquestion"+p).remove();
 }
 
 
 
 function showquestion(event){
-	 questionid=event.srcElement.getAttribute("questionid");
-	 if(questionid!=null){
-		 $.ajax({
-				type : "POST",
-				url : "/jerseyREST/webapi/myresource/question",
-				data:{quesid:questionid},
-				success : function (data) {
-					console.log(data);
-					}
-				});
-	 }
+	questionid=event.srcElement.getAttribute("questionid");
+	if(questionid!=null){
+		$.ajax({
+			type : "POST",
+			url : "/jerseyREST/webapi/myresource/question",
+			data:{quesid:questionid},
+			success : function (data) {
+				console.log(data);
+			}
+		});
+	}
 }
 
 function shownewquestion(event){
 	newparameter=event.srcElement.innerText;
 	trid=event.srcElement.parentNode.parentNode.parentNode.parentNode.id;
-	$("#"+trid).after('<form class="form-inline">'
-	+'<div class="form-group">'
-    +'<label for="question">问题:</label>'
-    +'<input type="text" class="form-control" id="question" >'
-    +'</div>'
-    +'<button type="submit" class="btn btn-default">确定</button>'
-    +'</form>');
+	if(newquestionmap[trid]){
+		newquestionmap[trid]=false;
+		$("#newquestion"+trid).remove();
+	}else{
+		$("#"+trid).after('<div id=newquestion'+trid+'>'
+				+'<div class="form-group">'
+				+'<label for="question">问题:</label>'
+				+'<input type="text" class="form-control" id="question" >'
+				+'</div>'
+				+'<button class="btn btn-default" onclick="">确定</button>'
+				+'</div>');
+		newquestionmap[trid]=true;
+	}
 }
 
+$('#gengxin').click(function(){
+	solutionid=3;
+	var json = JSON.stringify(testlist);
+	$.ajax({
+		type : "POST",
+		url : "/jerseyREST/webapi/myresource/solution",
+		data:{solution:solutionid,
+			parameters:json
+		},
+		success : function (data) {
+			console.log(data);
+		}
+	});
+});
